@@ -61,6 +61,7 @@ class _BodyState extends State<Body> {
                   _HomeState.list.add(_controller.text);
                   _HomeState._color.add(Colors.deepPurple);
                   _HomeState._current.add(true);
+                  _HomeState._style.add(null);
                   _controller.clear();
                 } on Exception catch (e) {
                   debugPrint('$e');
@@ -90,10 +91,11 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   static var now = new DateTime.now();
   static var formatter = new DateFormat('dd-MM-yyyy');
-  String formatted = formatter.format(now);
+  static String formatted = formatter.format(now);
   static List _color = [];
   static List _current = [];
   static List list = [];
+  static List _style = [];
   @override
   Widget build(BuildContext context) {
     TimeOfDay timeOfDay = TimeOfDay.fromDateTime(DateTime.now());
@@ -127,53 +129,78 @@ class _HomeState extends State<Home> {
                 borderRadius: BorderRadius.only(
                     topRight: Radius.circular(50),
                     topLeft: Radius.circular(50)),
-                color: Color(0XFFECECEC)),
+                color: Color(0xffececec)),
             child: Padding(
               padding: EdgeInsets.only(top: 30.0, left: 10.0, right: 10.0),
               child: ListView.builder(
                 itemCount: list.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return Card(
+                  return Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Color(0xffececec),
+                          boxShadow: [
+                            BoxShadow(
+                                offset: Offset(10, 10),
+                                color: Colors.black38,
+                                blurRadius: 20),
+                            BoxShadow(
+                                offset: Offset(-10, -10),
+                                color: Colors.white.withOpacity(0.85),
+                                blurRadius: 20)
+                          ]),
                       child: ListTile(
-                    leading: Icon(
-                      Icons.arrow_right,
-                      color: Colors.deepPurple,
-                    ),
-                    title: Text(list[index]) ?? Text("Hello"),
-                    trailing: ButtonBar(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Tooltip(
-                          message: "Done",
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.check_box,
-                              color: _color[index],
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _color[index] = _current[index]
-                                    ? Colors.green
-                                    : Colors.deepPurple;
-                                _current[index] = !_current[index];
-                              });
-                            },
-                          ),
+                        leading: Icon(
+                          Icons.arrow_right,
+                          color: Colors.deepPurple,
                         ),
-                        Tooltip(
-                          message: "Delete",
-                          child: IconButton(
-                              icon: Icon(Icons.delete),
-                              color: Colors.red,
-                              onPressed: () {
-                                setState(() {
-                                  list.removeAt(index);
-                                });
-                              }),
-                        )
-                      ],
+                        title: Text(
+                          list[index],
+                          style: _style[index],
+                        ),
+                        trailing: ButtonBar(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Tooltip(
+                              message: "Done",
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.check_box,
+                                  color: _color[index],
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _color[index] = _current[index]
+                                        ? Colors.green
+                                        : Colors.deepPurple;
+                                    _style[index] = _current[index]
+                                        ? TextStyle(
+                                            decoration:
+                                                TextDecoration.lineThrough)
+                                        : null;
+                                    _current[index] = !_current[index];
+                                  });
+                                },
+                              ),
+                            ),
+                            Tooltip(
+                              message: "Delete",
+                              child: IconButton(
+                                  icon: Icon(Icons.delete),
+                                  color: Colors.red,
+                                  onPressed: () {
+                                    setState(() {
+                                      list.removeAt(index);
+                                    });
+                                  }),
+                            )
+                          ],
+                        ),
+                      ),
                     ),
-                  ));
+                  );
                 },
               ),
             ),
@@ -183,3 +210,4 @@ class _HomeState extends State<Home> {
     );
   }
 }
+
