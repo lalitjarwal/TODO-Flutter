@@ -21,13 +21,19 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
+  final _linearGradient = LinearGradient(
+      colors: [Color(0xfffc00ff), Color(0xff00dbde)], stops: [0.0, 0.7]);
+  final _formkey = GlobalKey<FormState>();
   final _controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(50.0),
+          ),
           tooltip: 'Add item to ToDo list',
-          backgroundColor: Colors.deepPurple,
+          backgroundColor: Color(0xfffc00ff),
           icon: Icon(Icons.add),
           onPressed: () {
             testAlert(context);
@@ -36,41 +42,59 @@ class _BodyState extends State<Body> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       backgroundColor: Colors.deepPurple,
       appBar: AppBar(
-        leading: Icon(Icons.work),
+        flexibleSpace:
+            Container(decoration: BoxDecoration(gradient: _linearGradient)),
+        leading: Icon(Icons.work,),
         elevation: 0.0,
         title: Text('What To Do!'),
-        backgroundColor: Colors.transparent,
       ),
-      body: Home(),
+      body: Container(
+          decoration: BoxDecoration(gradient: _linearGradient), child: Home()),
     );
   }
 
   void testAlert(BuildContext context) {
     var alert = AlertDialog(
-      title: Text("Add Something"),
-      content: SizedBox(
-          child: TextField(
+    title: Text("Today\'s List"),
+    content: SizedBox(
+        child: Form(
+      key: _formkey,
+      child: TextFormField(
+        validator: (value) {
+          if (value.isEmpty) {
+            return 'Entry can\'t be empty!';
+          }
+          return null;
+        },
+        cursorColor: Colors.deepPurple,
         controller: _controller,
-        decoration: InputDecoration(hintText: 'What to do today.'),
-      )),
-      actions: [
-        FlatButton(
-            onPressed: () {
-              setState(() {
-                try {
-                  _HomeState.list.add(_controller.text);
-                  _HomeState._color.add(Colors.deepPurple);
-                  _HomeState._current.add(true);
-                  _HomeState._style.add(null);
-                  _controller.clear();
-                } on Exception catch (e) {
-                  debugPrint('$e');
-                }
-              });
-              Navigator.of(context).pop();
-            },
-            child: Text("Add"))
-      ],
+        decoration: InputDecoration(
+          labelText: 'TODO',
+          hintText: 'What to do today.',
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
+          prefixIcon: Icon(
+            Icons.work,
+          ),
+        ),
+      ),
+    )),
+    actions: [
+      FlatButton(
+          onPressed: () {
+            setState(() {
+              if (_formkey.currentState.validate()) {
+                _HomeState.list.add(_controller.text);
+                _HomeState._color.add(Colors.blue);
+                _HomeState._current.add(true);
+                _HomeState._style.add(null);
+                _controller.clear();
+                Navigator.of(context).pop();
+              }
+            });
+          },
+          child: Text("Add"))
+    ],
     );
 
     showDialog(
@@ -131,7 +155,11 @@ class _HomeState extends State<Home> {
                     topLeft: Radius.circular(50)),
                 color: Color(0xffececec)),
             child: Padding(
-              padding: EdgeInsets.only(top: 30.0, left: 10.0, right: 10.0),
+              padding: EdgeInsets.only(
+                top: 30.0,
+                left: 10.0,
+                right: 10.0,
+              ),
               child: ListView.builder(
                 itemCount: list.length,
                 itemBuilder: (BuildContext context, int index) {
@@ -154,7 +182,6 @@ class _HomeState extends State<Home> {
                       child: ListTile(
                         leading: Icon(
                           Icons.arrow_right,
-                          color: Colors.deepPurple,
                         ),
                         title: Text(
                           list[index],
@@ -174,7 +201,7 @@ class _HomeState extends State<Home> {
                                   setState(() {
                                     _color[index] = _current[index]
                                         ? Colors.green
-                                        : Colors.deepPurple;
+                                        : Colors.blue;
                                     _style[index] = _current[index]
                                         ? TextStyle(
                                             decoration:
@@ -210,4 +237,3 @@ class _HomeState extends State<Home> {
     );
   }
 }
-
