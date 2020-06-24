@@ -1,2 +1,2 @@
 # TODO-Flutter
-A TODO App built using Flutter bt Google
+A TODO App built using Flutter by Google
